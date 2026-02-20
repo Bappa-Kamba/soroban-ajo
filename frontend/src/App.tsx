@@ -8,14 +8,17 @@ import { GroupDetailPage } from '@/components/GroupDetailPage'
 import { GroupAnalytics } from '@/components/GroupAnalytics'
 import { ResponsiveLayout } from '@/components/ResponsiveLayout'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { Tutorial } from '@/components/Tutorial'
+import { Explore } from '@/pages/Explore'
 
-type ViewType = 'dashboard' | 'create' | 'detail' | 'analytics' | 'responsive'
+type ViewType = 'dashboard' | 'create' | 'detail' | 'analytics' | 'responsive' | 'explore'
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
 
   return (
     <>
+      <Tutorial />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         {/* Navigation */}
         <header className="bg-white shadow sticky top-0 z-50">
@@ -83,6 +86,16 @@ function App() {
             >
               Responsive Demo
             </button>
+            <button
+              onClick={() => setCurrentView('explore')}
+              className={`px-4 py-2 rounded font-semibold transition ${
+                currentView === 'explore'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Explore
+            </button>
           </div>
         </div>
 
@@ -107,6 +120,8 @@ function App() {
             {currentView === 'analytics' && <GroupAnalytics />}
 
             {currentView === 'responsive' && <ResponsiveLayout />}
+
+            {currentView === 'explore' && <Explore />}
           </ErrorBoundary>
         </main>
 

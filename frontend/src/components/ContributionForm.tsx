@@ -13,6 +13,10 @@ interface ContributionFormProps {
   existingContributions?: Array<{ date: string; amount: number }>
 }
 
+interface FormErrors {
+  amount?: string
+}
+
 export const ContributionForm: React.FC<ContributionFormProps> = ({
   groupId,
   contributionAmount,
@@ -125,10 +129,15 @@ export const ContributionForm: React.FC<ContributionFormProps> = ({
     setErrors([])
     
     try {
+      // TODO: Validate amount
       // TODO: Call contribute function on smart contract
       // TODO: Sign transaction with user's wallet
+      // TODO: Show success/error notification
+      // TODO: Update contributions in UI
+
+      // Placeholder for contract call
       console.log('Contributing to group:', groupId, 'Amount:', amount)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
       
@@ -185,10 +194,59 @@ export const ContributionForm: React.FC<ContributionFormProps> = ({
         <div>
           <label className="block text-sm font-semibold mb-2">
             Amount to Contribute ($)
+  const networkFee = 0.01
+  const total = amount + networkFee
+  const hasError = !!formErrors.amount
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6 max-w-md">
+      <h1 className="text-2xl font-bold mb-2">Make a Contribution</h1>
+      <p className="text-sm text-gray-600 mb-6">
+        Enter the amount you'd like to contribute to this group. Fields marked with <span className="text-red-600 font-semibold">*</span> are required.
+      </p>
+
+      {hasError && (
+        <div
+          ref={errorSummaryRef}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+          tabIndex={-1}
+        >
+          <h2 className="text-sm font-semibold text-red-800 mb-2">Please fix this error:</h2>
+          <ul className="text-sm text-red-700 space-y-1">
+            {formErrors.amount && (
+              <li>
+                <a href="#amount" className="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-600 rounded px-1">
+                  {formErrors.amount}
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {error && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm font-medium"
+        >
+          ⚠️ {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+        <div>
+          <label htmlFor="amount" className="block text-sm font-semibold mb-2">
+            Amount to Contribute ($) <span className="text-red-600 font-semibold" aria-label="required">*</span>
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-3 text-gray-600">$</span>
+            <span className="absolute left-3 top-3 text-gray-600" aria-hidden="true">$</span>
             <input
+              ref={amountInputRef}
+              id="amount"
               type="number"
               value={amount || ''}
               onChange={(e) => handleAmountChange(e.target.value)}
@@ -245,7 +303,7 @@ export const ContributionForm: React.FC<ContributionFormProps> = ({
             <span className="text-gray-600">Network Fee:</span>
             <span className="font-semibold">${NETWORK_FEE.toFixed(2)}</span>
           </div>
-          <div className="border-t pt-2 flex justify-between items-center">
+          <div className="border-t pt-3 flex justify-between items-center">
             <span className="text-gray-900 font-semibold">Total:</span>
             <span className="text-lg font-bold text-blue-600">
               ${totalAmount.toFixed(2)}
